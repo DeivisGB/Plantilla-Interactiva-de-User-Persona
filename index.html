@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de User Persona · UX Research</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --success: #10b981;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text-main); line-height: 1.5; padding-bottom: 40px; }
+
+    /* Header y Regla */
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .badge {
+      background: #eff6ff;
+      color: var(--primary);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .banner-rule {
+      background: #fffbeb;
+      border-left: 5px solid var(--accent);
+      padding: 14px 24px;
+      margin: 16px auto;
+      max-width: 1400px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.95rem;
+      color: #92400e;
+    }
+    .banner-rule strong { color: #78350f; }
+
+    /* Layout Principal */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    /* Columna Formulario */
+    .form-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .section-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin: 18px 0 10px 0;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+      font-weight: 700;
+    }
+    .section-title:first-of-type { margin-top: 0; }
+
+    .form-group { margin-bottom: 14px; }
+    .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+    label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: var(--text-main); }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      background: #fff;
+      color: var(--text-main);
+      transition: border-color 0.15s ease;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    textarea { resize: vertical; min-height: 55px; }
+
+    /* Barra de botones */
+    .actions-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 16px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary { background: #f1f5f9; color: var(--text-main); border-color: #cbd5e1; }
+    .btn-secondary:hover { background: #e2e8f0; }
+    .btn-danger { background: #fef2f2; color: var(--danger); border-color: #fecaca; }
+    .btn-danger:hover { background: #fee2e2; }
+
+    /* Columna Ficha Visual (Preview) */
+    .preview-sticky {
+      position: sticky;
+      top: 80px;
+    }
+    .preview-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .persona-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      position: relative;
+    }
+    .team-tag {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      background: #f1f5f9;
+      color: var(--text-muted);
+      padding: 3px 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    /* Perfil Header Card */
+    .profile-header {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .avatar-circle {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      flex-shrink: 0;
+      border: 2px solid var(--border);
+    }
+    .profile-info h2 { font-size: 1.45rem; font-weight: 800; color: #0f172a; margin-bottom: 2px; }
+    .profile-meta { font-size: 0.88rem; color: var(--text-muted); font-weight: 500; }
+
+    /* Cita destacada */
+    .quote-box {
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      padding: 12px 18px;
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+      color: #334155;
+      margin-bottom: 22px;
+      font-size: 1rem;
+    }
+
+    /* Grid Ficha */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .grid-block {
+      background: #fafafa;
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid #f0f0f0;
+    }
+    .grid-block h4 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .block-goals h4 { color: var(--success); }
+    .block-frustrations h4 { color: var(--danger); }
+    .block-motivations h4 { color: var(--accent); }
+    .block-behaviors h4 { color: var(--primary); }
+    .grid-block p { font-size: 0.88rem; color: #334155; white-space: pre-line; }
+
+    .full-block {
+      background: #fafafa;
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid #f0f0f0;
+      margin-bottom: 16px;
+    }
+    .full-block h4 { font-size: 0.8rem; text-transform: uppercase; color: #475569; margin-bottom: 6px; }
+    .full-block p { font-size: 0.88rem; color: #334155; white-space: pre-line; }
+
+    /* Footer de Sustento e Insights */
+    .research-evidence {
+      border-top: 1px dashed var(--border);
+      padding-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.84rem;
+    }
+    .evidence-item { display: flex; gap: 8px; align-items: flex-start; }
+    .evidence-tag {
+      font-weight: 700;
+      font-size: 0.72rem;
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    .placeholder-text { color: #94a3b8; font-style: italic; }
+
+    /* ESTILOS PARA DESCARGA / IMPRESIÓN (PDF) */
+    @media print {
+      body { background: white; color: #000; padding: 0; }
+      header, .banner-rule, .form-panel, .preview-actions, .actions-bar {
+        display: none !important;
+      }
+      .container { display: block; padding: 0; margin: 0; max-width: 100%; }
+      .preview-sticky { position: static; }
+      .persona-card {
+        border: 1px solid #999;
+        box-shadow: none;
+        padding: 20px;
+        page-break-inside: avoid;
+        border-radius: 0;
+      }
+      .quote-box { border-left-color: #333; background: #f5f5f5 !important; -webkit-print-color-adjust: exact; }
+      .grid-block, .full-block { background: #fafafa !important; -webkit-print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span class="badge">UX Research</span>
+      <h1 style="font-size: 1.15rem; font-weight: 800;">Plantilla Interactiva de User Persona</h1>
+    </div>
+    <span style="font-size: 0.82rem; color: var(--text-muted);">Completa con datos reales de tu investigación</span>
+  </header>
+
+  <div class="banner-rule">
+    <strong>📌 Regla de la sesión:</strong> Cada campo debe responder a un <u>dato real</u> de la investigación de tu equipo (entrevistas, encuestas, observación). Los nombres y fotos son decorativos; los <strong>datos conductuales</strong> son la carne del persona.
+  </div>
+
+  <main class="container">
+    
+    <!-- COLUMNA 1: FORMULARIO -->
+    <section class="form-panel">
+      
+      <div class="section-title">1. Datos Identificatorios</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="input-team">Nombre del equipo</label>
+          <input type="text" id="input-team" placeholder="Ej.: Equipo 3">
+        </div>
+        <div class="form-group">
+          <label for="input-name">Nombre ficticio del persona</label>
+          <input type="text" id="input-name" placeholder="Ej.: Valeria R.">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="input-age">Edad</label>
+          <input type="text" id="input-age" placeholder="Ej.: 27">
+        </div>
+        <div class="form-group">
+          <label for="input-occupation">Ocupación</label>
+          <input type="text" id="input-occupation" placeholder="Ej.: Diseñadora freelance">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="input-location">Ubicación</label>
+          <input type="text" id="input-location" placeholder="Ej.: Lima, Perú">
+        </div>
+        <div class="form-group">
+          <label for="input-tech">Nivel tecnológico</label>
+          <input type="text" id="input-tech" placeholder="Ej.: Intermedio-alto">
+        </div>
+        <div class="form-group">
+          <label for="input-avatar">Avatar / Emoji</label>
+          <select id="input-avatar">
+            <option value="👩‍💻">👩‍💻 Profesional tech</option>
+            <option value="👨‍💻">👨‍💻 Desarrollador/a</option>
+            <option value="👩‍🎨">👩‍🎨 Diseñadora / Creativa</option>
+            <option value="👨‍🏫">👨‍🏫 Estudiante / Docente</option>
+            <option value="🧑‍💼">🧑‍💼 Emprendedor/a</option>
+            <option value="📱">📱 Usuario móvil</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="input-quote">Frase representativa (cita textual o parafraseada)</label>
+        <input type="text" id="input-quote" placeholder="Ej.: “Abandono la app cuando se rompe mi racha.”">
+      </div>
+
+      <div class="section-title">2. Núcleo Conductual (Psicografía)</div>
+      
+      <div class="form-group">
+        <label for="input-goals">Objetivos — qué quiere lograr</label>
+        <textarea id="input-goals" placeholder="Ej.: practicar inglés 10 min al día sin sentir que es una obligación"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="input-frustrations">Frustraciones — qué le impide o molesta</label>
+        <textarea id="input-frustrations" placeholder="Ej.: ejercicios repetitivos, pérdida de motivación al romper la racha"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="input-motivations">Motivaciones — por qué lo hace</label>
+        <textarea id="input-motivations" placeholder="Ej.: viaje programado, sentir progreso visible"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="input-behaviors">Comportamientos — cómo actúa hoy (apps, horarios, canales)</label>
+        <textarea id="input-behaviors" placeholder="Ej.: usa el celular en el transporte, 8–9 am; abandona si la lección dura más de 15 min"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="input-context">Contexto de uso — dónde, cuándo, con quién, dispositivo</label>
+        <textarea id="input-context" placeholder="Ej.: en el bus al trabajo, celular, con auriculares, señal intermitente"></textarea>
+      </div>
+
+      <div class="section-title">3. Rigor Metodológico y Sustento</div>
+
+      <div class="form-group">
+        <label for="input-insights">Insights que sustentan este persona (del affinity mapping)</label>
+        <textarea id="input-insights" placeholder="Ej.: 6 de 8 entrevistados reportan pérdida de motivación cuando se rompe la racha; patrón confirmado en encuesta (71%)"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="input-source">Fuente de datos (qué estudio del equipo lo respalda)</label>
+        <input type="text" id="input-source" placeholder="Ej.: 5 entrevistas + encuesta n=34, semana 5">
+      </div>
+
+      <!-- Acciones de soporte -->
+      <div class="actions-bar">
+        <button type="button" class="btn btn-secondary" onclick="loadExample()">⚡ Cargar ejemplo (Valeria R.)</button>
+        <button type="button" class="btn btn-danger" onclick="clearForm()">🗑️ Limpiar</button>
+      </div>
+
+    </section>
+
+    <!-- COLUMNA 2: FICHA EN VIVO (PREVIEW) -->
+    <div class="preview-sticky">
+      
+      <div class="preview-actions">
+        <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Descargar / Imprimir</button>
+        <button type="button" class="btn btn-secondary" onclick="exportText()">📄 Exportar como texto</button>
+      </div>
+      <p style="font-size:0.75rem; color:var(--text-muted); text-align:right; margin-bottom:8px;">
+        💡 <em>“Descargar / imprimir” abre el diálogo del navegador: elige “Guardar como PDF”. “Exportar como texto” genera un archivo listo para subir a la EVA.</em>
+      </p>
+
+      <!-- TARJETA DEL PERSONA -->
+      <article class="persona-card" id="persona-card">
+        <div class="team-tag" id="view-team">Equipo: Pendiente</div>
+
+        <div class="profile-header">
+          <div class="avatar-circle" id="view-avatar">👩‍💻</div>
+          <div class="profile-info">
+            <h2 id="view-name">Persona sin nombre</h2>
+            <div class="profile-meta" id="view-meta">Edad · ocupación · ubicación · nivel tecnológico</div>
+          </div>
+        </div>
+
+        <div class="quote-box" id="view-quote">
+          “Frase representativa del usuario...”
+        </div>
+
+        <div class="card-grid">
+          <div class="grid-block block-goals">
+            <h4>🎯 Objetivos</h4>
+            <p id="view-goals" class="placeholder-text">Pendiente…</p>
+          </div>
+          <div class="grid-block block-frustrations">
+            <h4>⚠️ Frustraciones</h4>
+            <p id="view-frustrations" class="placeholder-text">Pendiente…</p>
+          </div>
+          <div class="grid-block block-motivations">
+            <h4>🔥 Motivaciones</h4>
+            <p id="view-motivations" class="placeholder-text">Pendiente…</p>
+          </div>
+          <div class="grid-block block-behaviors">
+            <h4>📱 Comportamientos</h4>
+            <p id="view-behaviors" class="placeholder-text">Pendiente…</p>
+          </div>
+        </div>
+
+        <div class="full-block">
+          <h4>📍 Contexto de uso</h4>
+          <p id="view-context" class="placeholder-text">Pendiente…</p>
+        </div>
+
+        <div class="research-evidence">
+          <div class="evidence-item">
+            <span class="evidence-tag">Insight Clave</span>
+            <span id="view-insights" class="placeholder-text">Pendiente…</span>
+          </div>
+          <div class="evidence-item">
+            <span class="evidence-tag" style="background:#fef3c7; color:#92400e;">Fuente Datos</span>
+            <span id="view-source" class="placeholder-text">Fuente de datos: pendiente…</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+  </main>
+
+  <script>
+    // IDs de mapeo
+    const fields = [
+      'team', 'name', 'age', 'occupation', 'location', 
+      'tech', 'avatar', 'quote', 'goals', 'frustrations', 
+      'motivations', 'behaviors', 'context', 'insights', 'source'
+    ];
+
+    // Cargar datos al escribir
+    fields.forEach(field => {
+      const input = document.getElementById(`input-${field}`);
+      if (input) {
+        input.addEventListener('input', updateCard);
+      }
+    });
+
+    function updateCard() {
+      const getVal = id => document.getElementById(`input-${id}`).value.trim();
+
+      // Team
+      document.getElementById('view-team').innerText = getVal('team') || 'Equipo: Pendiente';
+
+      // Avatar
+      document.getElementById('view-avatar').innerText = getVal('avatar');
+
+      // Nombre
+      document.getElementById('view-name').innerText = getVal('name') || 'Persona sin nombre';
+
+      // Meta
+      const metaArr = [getVal('age') ? `${getVal('age')} años` : null, getVal('occupation'), getVal('location'), getVal('tech')].filter(Boolean);
+      document.getElementById('view-meta').innerText = metaArr.length ? metaArr.join(' · ') : 'Edad · ocupación · ubicación · nivel tecnológico';
+
+      // Quote
+      const quoteVal = getVal('quote');
+      document.getElementById('view-quote').innerText = quoteVal ? (quoteVal.startsWith('“') ? quoteVal : `“${quoteVal}”`) : '“Frase representativa...”';
+
+      // Text blocks
+      updateField('goals');
+      updateField('frustrations');
+      updateField('motivations');
+      updateField('behaviors');
+      updateField('context');
+      updateField('insights');
+
+      // Source
+      const sourceVal = getVal('source');
+      const viewSource = document.getElementById('view-source');
+      if (sourceVal) {
+        viewSource.innerText = sourceVal;
+        viewSource.classList.remove('placeholder-text');
+      } else {
+        viewSource.innerText = 'Fuente de datos: pendiente…';
+        viewSource.classList.add('placeholder-text');
+      }
+
+      saveLocal();
+    }
+
+    function updateField(id) {
+      const val = document.getElementById(`input-${id}`).value.trim();
+      const el = document.getElementById(`view-${id}`);
+      if (val) {
+        el.innerText = val;
+        el.classList.remove('placeholder-text');
+      } else {
+        el.innerText = 'Pendiente…';
+        el.classList.add('placeholder-text');
+      }
+    }
+
+    // Persistencia LocalStorage
+    function saveLocal() {
+      const data = {};
+      fields.forEach(f => {
+        data[f] = document.getElementById(`input-${f}`).value;
+      });
+      localStorage.setItem('ux_persona_data', JSON.stringify(data));
+    }
+
+    function loadLocal() {
+      const saved = localStorage.getItem('ux_persona_data');
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          fields.forEach(f => {
+            if (data[f] !== undefined) document.getElementById(`input-${f}`).value = data[f];
+          });
+          updateCard();
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+
+    // Botón Cargar Ejemplo (Valeria R.)
+    function loadExample() {
+      document.getElementById('input-team').value = "Equipo 3";
+      document.getElementById('input-name').value = "Valeria R.";
+      document.getElementById('input-age').value = "27";
+      document.getElementById('input-occupation').value = "Diseñadora freelance";
+      document.getElementById('input-location').value = "Lima, Perú";
+      document.getElementById('input-tech').value = "Intermedio-alto";
+      document.getElementById('input-avatar').value = "👩‍🎨";
+      document.getElementById('input-quote').value = "“Abandono la app cuando se rompe mi racha.”";
+      document.getElementById('input-goals').value = "Practicar inglés 10 min al día sin sentir que es una obligación";
+      document.getElementById('input-frustrations').value = "Ejercicios repetitivos, pérdida de motivación al romper la racha";
+      document.getElementById('input-motivations').value = "Viaje programado, sentir progreso visible";
+      document.getElementById('input-behaviors').value = "Usa el celular en el transporte, 8–9 am; abandona si la lección dura más de 15 min";
+      document.getElementById('input-context').value = "En el bus al trabajo, celular, con auriculares, señal intermitente";
+      document.getElementById('input-insights').value = "6 de 8 entrevistados reportan pérdida de motivación cuando se rompe la racha; patrón confirmado en encuesta (71%)";
+      document.getElementById('input-source').value = "5 entrevistas + encuesta n=34, semana 5";
+      updateCard();
+    }
+
+    // Limpiar formulario
+    function clearForm() {
+      if (confirm("¿Estás seguro de que deseas limpiar todos los campos?")) {
+        fields.forEach(f => {
+          document.getElementById(`input-${f}`).value = '';
+        });
+        localStorage.removeItem('ux_persona_data');
+        updateCard();
+      }
+    }
+
+    // Exportar archivo .TXT para subir a EVA
+    function exportText() {
+      const getVal = id => document.getElementById(`input-${id}`).value.trim() || 'No especificado';
+      
+      const teamName = getVal('team');
+      const personaName = getVal('name');
+
+      const content = `=====================================================
+FICHA DE USER PERSONA - UX RESEARCH
+Equipo: ${teamName}
+=====================================================
+
+1. PERFIL GENERAL
+-----------------
+Nombre ficticio : ${personaName}
+Edad            : ${getVal('age')}
+Ocupación       : ${getVal('occupation')}
+Ubicación       : ${getVal('location')}
+Nivel tecno.    : ${getVal('tech')}
+
+CITA REPRESENTATIVA:
+${getVal('quote')}
+
+2. DATOS CONDUCTUALES (INVESTIGACIÓN)
+-------------------------------------
+OBJETIVOS:
+${getVal('goals')}
+
+FRUSTRACIONES:
+${getVal('frustrations')}
+
+MOTIVACIONES:
+${getVal('motivations')}
+
+COMPORTAMIENTOS:
+${getVal('behaviors')}
+
+CONTEXTO DE USO:
+${getVal('context')}
+
+3. SUSTENTO METODOLÓGICO
+------------------------
+INSIGHTS (AFFINITY MAPPING):
+${getVal('insights')}
+
+FUENTE DE DATOS:
+${getVal('source')}
+
+=====================================================
+Generado el: ${new Date().toLocaleString()}
+Documento listo para evaluación académica en EVA.
+`;
+
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `UserPersona_${teamName.replace(/\s+/g, '_')}_${personaName.replace(/\s+/g, '_')}.txt`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    // Inicializar
+    window.addEventListener('DOMContentLoaded', loadLocal);
+  </script>
+</body>
+</html>
